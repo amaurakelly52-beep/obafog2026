@@ -1,0 +1,567 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;700&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --navy:#0B2447;--navy2:#19376D;--navy3:#1A4A7A;
+    --gold:#F5B800;--gold2:#FFD000;--gold3:#FFF0A0;
+    --white:#FFFFFF;--offwhite:#F7F9FC;--border:#E2E8F0;
+    --text:#0B2447;--muted:#64748B;--light:#94A3B8;
+    --green:#16A34A;--red:#DC2626;--blue:#2563EB;
+  }
+  body,#app{font-family:'Plus Jakarta Sans',sans-serif;background:var(--offwhite);color:var(--text);min-height:600px;}
+  #app{display:flex;flex-direction:column;min-height:600px;max-width:390px;margin:0 auto;overflow:hidden;}
+
+  /* NAV */
+  .nav{background:var(--navy);padding:0;position:sticky;top:0;z-index:100;}
+  .nav-top{display:flex;align-items:center;justify-content:space-between;padding:12px 16px 8px;}
+  .nav-logo{display:flex;align-items:center;gap:8px;}
+  .nav-logo .rocket{width:28px;height:28px;background:var(--gold);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:15px;}
+  .nav-title{color:var(--white);font-size:13px;font-weight:700;letter-spacing:0.5px;}
+  .nav-sub{color:rgba(255,255,255,0.55);font-size:10px;font-weight:500;}
+  .nav-user{width:30px;height:30px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--navy);cursor:pointer;}
+  .tabs{display:flex;border-top:1px solid rgba(255,255,255,0.1);}
+  .tab{flex:1;padding:10px 4px;text-align:center;color:rgba(255,255,255,0.5);font-size:10px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;transition:all 0.2s;letter-spacing:0.3px;}
+  .tab.active{color:var(--gold);border-bottom-color:var(--gold);}
+  .tab i{display:block;font-size:16px;margin-bottom:2px;}
+
+  /* PAGES */
+  .page{display:none;padding:16px;flex:1;overflow-y:auto;}
+  .page.active{display:block;}
+
+  /* DASHBOARD */
+  .greeting{margin-bottom:16px;}
+  .greeting h2{font-size:18px;font-weight:800;color:var(--navy);}
+  .greeting p{font-size:12px;color:var(--muted);margin-top:2px;}
+  .metrics{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+  .metric-card{background:var(--white);border-radius:12px;padding:14px;border:0.5px solid var(--border);}
+  .metric-card.highlight{background:var(--navy);color:var(--white);}
+  .metric-label{font-size:10px;font-weight:600;letter-spacing:0.5px;color:var(--muted);text-transform:uppercase;}
+  .metric-card.highlight .metric-label{color:rgba(255,255,255,0.6);}
+  .metric-value{font-size:26px;font-weight:800;color:var(--navy);line-height:1.1;margin:4px 0 2px;}
+  .metric-card.highlight .metric-value{color:var(--gold);}
+  .metric-change{font-size:10px;font-weight:600;color:var(--green);}
+  .metric-card.highlight .metric-change{color:rgba(255,255,255,0.6);}
+  .section-title{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;}
+  .see-all{font-size:11px;color:var(--blue);font-weight:600;cursor:pointer;}
+  .activity-list{display:flex;flex-direction:column;gap:8px;}
+  .activity-item{background:var(--white);border-radius:10px;padding:10px 12px;border:0.5px solid var(--border);display:flex;align-items:center;gap:10px;}
+  .act-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+  .act-icon.gold{background:#FFF8E0;color:var(--navy);}
+  .act-icon.blue{background:#EFF6FF;color:var(--blue);}
+  .act-icon.green{background:#DCFCE7;color:var(--green);}
+  .act-title{font-size:12px;font-weight:600;color:var(--navy);}
+  .act-sub{font-size:11px;color:var(--muted);}
+  .act-time{font-size:10px;color:var(--light);margin-left:auto;flex-shrink:0;}
+  .prog-bar-wrap{margin-bottom:16px;background:var(--white);border-radius:12px;padding:14px;border:0.5px solid var(--border);}
+  .prog-label{font-size:11px;font-weight:600;color:var(--muted);margin-bottom:6px;display:flex;justify-content:space-between;}
+  .prog-bar{height:8px;background:var(--border);border-radius:4px;overflow:hidden;}
+  .prog-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--navy),var(--blue));}
+  .prog-fill.gold{background:linear-gradient(90deg,var(--gold),#FF9900);}
+
+  /* CADASTRO */
+  .form-section{background:var(--white);border-radius:12px;padding:14px;border:0.5px solid var(--border);margin-bottom:12px;}
+  .form-section-title{font-size:12px;font-weight:700;color:var(--navy);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:6px;}
+  .form-row{margin-bottom:10px;}
+  .form-label{font-size:11px;font-weight:600;color:var(--muted);margin-bottom:4px;display:block;text-transform:uppercase;letter-spacing:0.4px;}
+  .form-input{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;color:var(--navy);background:var(--offwhite);transition:border 0.2s;outline:none;}
+  .form-input:focus{border-color:var(--navy2);background:var(--white);}
+  .form-select{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;color:var(--navy);background:var(--offwhite);outline:none;}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .btn-primary{width:100%;padding:12px;background:var(--navy);color:var(--white);border:none;border-radius:10px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;transition:background 0.2s;letter-spacing:0.3px;}
+  .btn-primary:hover{background:var(--navy2);}
+  .btn-secondary{width:100%;padding:12px;background:var(--white);color:var(--navy);border:1.5px solid var(--navy);border-radius:10px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;margin-bottom:8px;}
+  .btn-gold{width:100%;padding:12px;background:var(--gold);color:var(--navy);border:none;border-radius:10px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;}
+  .import-box{border:2px dashed var(--border);border-radius:10px;padding:20px;text-align:center;background:var(--offwhite);cursor:pointer;margin-bottom:10px;}
+  .import-box:hover{border-color:var(--navy);background:var(--white);}
+  .import-icon{font-size:28px;color:var(--muted);margin-bottom:6px;}
+  .import-text{font-size:12px;color:var(--muted);font-weight:500;}
+  .import-sub{font-size:10px;color:var(--light);}
+  .badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:0.3px;}
+  .badge-success{background:#DCFCE7;color:#15803D;}
+  .badge-warn{background:#FEF9C3;color:#854D0E;}
+  .badge-info{background:#DBEAFE;color:#1D4ED8;}
+  .badge-navy{background:var(--navy);color:var(--white);}
+
+  /* TURMAS */
+  .turma-card{background:var(--white);border-radius:12px;padding:12px 14px;border:0.5px solid var(--border);margin-bottom:8px;display:flex;align-items:center;gap:12px;}
+  .turma-icon{width:38px;height:38px;border-radius:9px;background:var(--navy);display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--white);flex-shrink:0;}
+  .turma-name{font-size:13px;font-weight:700;color:var(--navy);}
+  .turma-meta{font-size:11px;color:var(--muted);}
+  .turma-actions{margin-left:auto;display:flex;gap:6px;}
+  .icon-btn{width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:var(--white);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--muted);}
+  .icon-btn:hover{background:var(--offwhite);}
+  .chip{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;background:var(--offwhite);border:1px solid var(--border);font-size:11px;font-weight:600;color:var(--navy);margin:2px;}
+  .add-turma-btn{border:2px dashed var(--border);border-radius:12px;padding:14px;text-align:center;color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;background:transparent;width:100%;}
+  .add-turma-btn:hover{border-color:var(--navy);color:var(--navy);background:var(--white);}
+  .filter-bar{display:flex;gap:6px;overflow-x:auto;margin-bottom:12px;padding-bottom:2px;}
+  .filter-chip{padding:6px 12px;border-radius:20px;border:1px solid var(--border);background:var(--white);font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;white-space:nowrap;flex-shrink:0;}
+  .filter-chip.active{background:var(--navy);color:var(--white);border-color:var(--navy);}
+
+  /* RANKING */
+  .rank-header{background:var(--navy);border-radius:14px;padding:16px;margin-bottom:14px;text-align:center;position:relative;overflow:hidden;}
+  .rank-header::before{content:'🚀';position:absolute;font-size:60px;opacity:0.1;right:-10px;top:-10px;}
+  .rank-header h3{color:var(--white);font-size:16px;font-weight:800;}
+  .rank-header p{color:rgba(255,255,255,0.6);font-size:11px;margin-top:2px;}
+  .rank-header .live-badge{display:inline-block;background:var(--gold);color:var(--navy);font-size:9px;font-weight:800;padding:2px 8px;border-radius:20px;margin-top:6px;letter-spacing:0.5px;}
+  .podium{display:flex;align-items:flex-end;justify-content:center;gap:6px;margin-bottom:16px;}
+  .podium-item{flex:1;text-align:center;max-width:110px;}
+  .podium-bar{border-radius:8px 8px 0 0;display:flex;align-items:center;justify-content:center;font-size:20px;}
+  .podium-bar.p1{height:70px;background:var(--gold);}
+  .podium-bar.p2{height:52px;background:#C0C0C0;}
+  .podium-bar.p3{height:40px;background:#CD7F32;}
+  .podium-name{font-size:10px;font-weight:700;color:var(--navy);margin-top:4px;line-height:1.2;}
+  .podium-score{font-size:11px;color:var(--muted);font-weight:600;}
+  .rank-table{background:var(--white);border-radius:12px;border:0.5px solid var(--border);overflow:hidden;}
+  .rank-row{display:flex;align-items:center;padding:10px 14px;border-bottom:0.5px solid var(--border);gap:10px;}
+  .rank-row:last-child{border-bottom:none;}
+  .rank-row.top{background:#FFFBEB;}
+  .rank-pos{font-size:12px;font-weight:800;color:var(--navy);width:20px;text-align:center;flex-shrink:0;}
+  .rank-team-icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+  .rank-team-name{font-size:12px;font-weight:700;color:var(--navy);flex:1;}
+  .rank-school{font-size:10px;color:var(--muted);}
+  .rank-score{font-size:14px;font-weight:800;color:var(--navy);}
+  .rank-delta{font-size:10px;font-weight:600;margin-top:1px;}
+  .delta-up{color:var(--green);}
+  .delta-down{color:var(--red);}
+  .score-bar-mini{height:4px;background:var(--border);border-radius:2px;margin-top:3px;overflow:hidden;}
+  .score-fill-mini{height:100%;background:var(--gold);border-radius:2px;}
+
+  /* RELATÓRIOS */
+  .report-card{background:var(--white);border-radius:12px;padding:14px;border:0.5px solid var(--border);margin-bottom:8px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:border 0.2s;}
+  .report-card:hover{border-color:var(--navy);}
+  .report-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+  .report-icon.navy{background:var(--navy);color:var(--white);}
+  .report-icon.gold{background:#FFF8E0;color:var(--navy);}
+  .report-icon.green{background:#DCFCE7;color:var(--green);}
+  .report-icon.blue{background:#DBEAFE;color:var(--blue);}
+  .report-name{font-size:13px;font-weight:700;color:var(--navy);}
+  .report-desc{font-size:11px;color:var(--muted);margin-top:1px;}
+  .report-meta{margin-left:auto;text-align:right;flex-shrink:0;}
+  .report-size{font-size:10px;color:var(--light);}
+  .stat-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;}
+  .stat-mini{background:var(--white);border-radius:10px;padding:10px;border:0.5px solid var(--border);text-align:center;}
+  .stat-mini-val{font-size:18px;font-weight:800;color:var(--navy);}
+  .stat-mini-lbl{font-size:9px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.3px;}
+
+  /* TOAST */
+  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--navy);color:var(--white);padding:10px 18px;border-radius:10px;font-size:12px;font-weight:600;opacity:0;transition:opacity 0.3s;z-index:999;pointer-events:none;}
+  .toast.show{opacity:1;}
+
+  /* MODAL */
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;align-items:center;justify-content:center;}
+  .modal-overlay.show{display:flex;}
+  .modal{background:var(--white);border-radius:16px;padding:20px;width:calc(100% - 32px);max-width:350px;}
+  .modal-title{font-size:15px;font-weight:800;color:var(--navy);margin-bottom:6px;}
+  .modal-text{font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.5;}
+  .modal-actions{display:flex;gap:8px;}
+  .modal-cancel{flex:1;padding:10px;background:var(--offwhite);border:1px solid var(--border);border-radius:8px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;color:var(--muted);}
+  .modal-confirm{flex:1;padding:10px;background:var(--navy);border:none;border-radius:8px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;color:var(--white);}
+
+  /* LOGIN */
+  #login-screen{display:flex;flex-direction:column;min-height:100vh;background:var(--navy);align-items:center;justify-content:center;padding:32px 24px;}
+  .login-logo{width:64px;height:64px;background:var(--gold);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:32px;margin-bottom:16px;}
+  .login-title{color:var(--white);font-size:22px;font-weight:800;text-align:center;}
+  .login-sub{color:rgba(255,255,255,0.55);font-size:12px;text-align:center;margin-top:4px;margin-bottom:28px;}
+  .login-card{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:16px;padding:20px;width:100%;}
+  .login-label{color:rgba(255,255,255,0.7);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:6px;}
+  .login-input{width:100%;padding:11px 14px;border-radius:9px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.1);color:var(--white);font-size:13px;font-family:inherit;outline:none;margin-bottom:12px;}
+  .login-input::placeholder{color:rgba(255,255,255,0.35);}
+  .login-btn{width:100%;padding:13px;background:var(--gold);color:var(--navy);border:none;border-radius:10px;font-size:14px;font-weight:800;font-family:inherit;cursor:pointer;margin-top:4px;letter-spacing:0.3px;}
+  .login-footer{color:rgba(255,255,255,0.4);font-size:10px;text-align:center;margin-top:20px;}
+  .seduc-badge{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);border-radius:6px;padding:4px 10px;font-size:10px;color:rgba(255,255,255,0.6);font-weight:600;margin-bottom:20px;}
+</style>
+
+<div id="login-screen">
+  <div class="login-logo">🚀</div>
+  <div class="seduc-badge">SEDUC-PA • Olimpíadas 2026</div>
+  <div class="login-title">OBAFOG 2026</div>
+  <div class="login-sub">Sistema de Gestão da Olimpíada de Foguetes</div>
+  <div class="login-card">
+    <label class="login-label">E-mail institucional</label>
+    <input class="login-input" type="email" placeholder="usuario@seduc.pa.gov.br" id="login-email">
+    <label class="login-label">Senha</label>
+    <input class="login-input" type="password" placeholder="••••••••" id="login-pass">
+    <button class="login-btn" onclick="doLogin()">Entrar no Sistema</button>
+  </div>
+  <div class="login-footer">Acesso restrito a coordenadores e professores credenciados<br>SEDUC-PA © 2026</div>
+</div>
+
+<div id="app" style="display:none;">
+  <div class="nav">
+    <div class="nav-top">
+      <div class="nav-logo">
+        <div class="rocket">🚀</div>
+        <div>
+          <div class="nav-title">OBAFOG 2026</div>
+          <div class="nav-sub">SEDUC-PA</div>
+        </div>
+      </div>
+      <div class="nav-user" title="Prof. Ana Silva">AS</div>
+    </div>
+    <div class="tabs">
+      <div class="tab active" onclick="showPage('dashboard',this)"><i class="ti ti-layout-dashboard"></i>Dashboard</div>
+      <div class="tab" onclick="showPage('cadastro',this)"><i class="ti ti-user-plus"></i>Cadastro</div>
+      <div class="tab" onclick="showPage('turmas',this)"><i class="ti ti-users"></i>Turmas</div>
+      <div class="tab" onclick="showPage('ranking',this)"><i class="ti ti-trophy"></i>Ranking</div>
+      <div class="tab" onclick="showPage('relatorios',this)"><i class="ti ti-file-text"></i>Relatórios</div>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div class="page active" id="page-dashboard">
+    <div class="greeting">
+      <h2>Bom dia, Prof. Ana! 👋</h2>
+      <p>Olimpíada de Foguetes 2026 • Atualizado agora</p>
+    </div>
+    <div class="metrics">
+      <div class="metric-card highlight">
+        <div class="metric-label">Alunos</div>
+        <div class="metric-value">847</div>
+        <div class="metric-change">+23 esta semana</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Equipes</div>
+        <div class="metric-value">142</div>
+        <div class="metric-change" style="color:var(--blue);">12 municipios</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Escolas</div>
+        <div class="metric-value">68</div>
+        <div class="metric-change">Pará</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Turmas</div>
+        <div class="metric-value">203</div>
+        <div class="metric-change" style="color:var(--green);">Ativas</div>
+      </div>
+    </div>
+    <div class="prog-bar-wrap">
+      <div class="prog-label"><span>Cadastros concluídos</span><span style="font-weight:800;color:var(--navy);">73%</span></div>
+      <div class="prog-bar"><div class="prog-fill" style="width:73%"></div></div>
+      <div style="font-size:10px;color:var(--muted);margin-top:6px;">Meta: 1.160 alunos até 30/jun/2026</div>
+    </div>
+    <div class="prog-bar-wrap" style="margin-top:-6px;">
+      <div class="prog-label"><span>Fase classificatória</span><span style="font-weight:800;color:var(--gold);">45%</span></div>
+      <div class="prog-bar"><div class="prog-fill gold" style="width:45%"></div></div>
+      <div style="font-size:10px;color:var(--muted);margin-top:6px;">Final estadual: 15/ago/2026 • Belém</div>
+    </div>
+    <div class="section-title">Atividade Recente <span class="see-all" onclick="showToast('Histórico completo carregado')">Ver tudo</span></div>
+    <div class="activity-list">
+      <div class="activity-item">
+        <div class="act-icon gold"><i class="ti ti-user-plus" style="font-size:16px;"></i></div>
+        <div><div class="act-title">14 alunos importados</div><div class="act-sub">EEM Grão-Pará • Belém</div></div>
+        <div class="act-time">2min</div>
+      </div>
+      <div class="activity-item">
+        <div class="act-icon blue"><i class="ti ti-trophy" style="font-size:16px;"></i></div>
+        <div><div class="act-title">Ranking atualizado</div><div class="act-sub">Fase 2 • Categoria Médio</div></div>
+        <div class="act-time">18min</div>
+      </div>
+      <div class="activity-item">
+        <div class="act-icon green"><i class="ti ti-file-text" style="font-size:16px;"></i></div>
+        <div><div class="act-title">Relatório gerado</div><div class="act-sub">Municipio Santarém • PDF</div></div>
+        <div class="act-time">1h</div>
+      </div>
+      <div class="activity-item">
+        <div class="act-icon gold"><i class="ti ti-users" style="font-size:16px;"></i></div>
+        <div><div class="act-title">Nova equipe cadastrada</div><div class="act-sub">Equipe Saturno • Marabá</div></div>
+        <div class="act-time">2h</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CADASTRO -->
+  <div class="page" id="page-cadastro">
+    <div class="section-title" style="margin-bottom:12px;">Cadastrar Aluno</div>
+    <div class="form-section">
+      <div class="form-section-title"><i class="ti ti-user" style="font-size:14px;"></i> Dados Pessoais</div>
+      <div class="form-row">
+        <label class="form-label">Nome completo</label>
+        <input class="form-input" type="text" placeholder="Ex: João Pedro da Silva" id="aluno-nome">
+      </div>
+      <div class="form-grid">
+        <div class="form-row">
+          <label class="form-label">Data de Nasc.</label>
+          <input class="form-input" type="date" id="aluno-nasc">
+        </div>
+        <div class="form-row">
+          <label class="form-label">Série</label>
+          <select class="form-select" id="aluno-serie">
+            <option>1º Ano EM</option><option>2º Ano EM</option><option>3º Ano EM</option>
+            <option>8º Ano EF</option><option>9º Ano EF</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Escola</label>
+        <select class="form-select" id="aluno-escola">
+          <option>EEM Grão-Pará</option><option>EEM Magalhães Barata</option><option>CEEP Dom Bosco</option><option>EEM Gov. Jarbas Passarinho</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-section">
+      <div class="form-section-title"><i class="ti ti-rocket" style="font-size:14px;"></i> Participação</div>
+      <div class="form-row">
+        <label class="form-label">Turma</label>
+        <select class="form-select">
+          <option>Turma A - Belém Norte</option><option>Turma B - Belém Sul</option><option>Turma C - Ananindeua</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Equipe</label>
+        <select class="form-select">
+          <option>Selecionar equipe...</option><option>🚀 Equipe Saturno</option><option>⭐ Equipe Orion</option><option>🌙 Equipe Apolo</option>
+        </select>
+      </div>
+      <div class="form-grid">
+        <div class="form-row">
+          <label class="form-label">Função</label>
+          <select class="form-select">
+            <option>Construtor</option><option>Lançador</option><option>Observador</option><option>Anotador</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Categoria</label>
+          <select class="form-select">
+            <option>Médio</option><option>Fund. II</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <button class="btn-primary" onclick="salvarAluno()" style="margin-bottom:10px;">Salvar Aluno</button>
+    <div style="text-align:center;font-size:11px;color:var(--muted);margin:6px 0 10px;">ou</div>
+    <div class="form-section">
+      <div class="form-section-title"><i class="ti ti-table-import" style="font-size:14px;"></i> Importar em Lote</div>
+      <div class="import-box" onclick="showToast('Selecione o arquivo .xlsx')">
+        <div class="import-icon"><i class="ti ti-upload" style="font-size:28px;"></i></div>
+        <div class="import-text">Arraste o arquivo Excel aqui</div>
+        <div class="import-sub">.xlsx até 10MB • máx. 500 alunos por arquivo</div>
+      </div>
+      <button class="btn-gold" onclick="showToast('📥 Modelo baixado com sucesso!')"><i class="ti ti-download" style="font-size:14px;"></i> Baixar Modelo Excel</button>
+    </div>
+  </div>
+
+  <!-- TURMAS -->
+  <div class="page" id="page-turmas">
+    <div class="filter-bar">
+      <div class="filter-chip active" onclick="filterChip(this)">Todas</div>
+      <div class="filter-chip" onclick="filterChip(this)">Belém</div>
+      <div class="filter-chip" onclick="filterChip(this)">Santarém</div>
+      <div class="filter-chip" onclick="filterChip(this)">Marabá</div>
+      <div class="filter-chip" onclick="filterChip(this)">Ananindeua</div>
+      <div class="filter-chip" onclick="filterChip(this)">Castanhal</div>
+    </div>
+    <div class="section-title">Equipes Cadastradas <span class="badge badge-navy">142</span></div>
+    <div id="turmas-list">
+      <div class="turma-card">
+        <div class="turma-icon">🚀</div>
+        <div>
+          <div class="turma-name">Equipe Saturno</div>
+          <div class="turma-meta">EEM Grão-Pará • Belém • 4 alunos</div>
+          <div style="margin-top:4px;"><span class="badge badge-success">Completa</span></div>
+        </div>
+        <div class="turma-actions">
+          <button class="icon-btn" onclick="showToast('Editando equipe...')"><i class="ti ti-edit" style="font-size:12px;"></i></button>
+          <button class="icon-btn" onclick="openModal()"><i class="ti ti-trash" style="font-size:12px;"></i></button>
+        </div>
+      </div>
+      <div class="turma-card">
+        <div class="turma-icon">⭐</div>
+        <div>
+          <div class="turma-name">Equipe Orion</div>
+          <div class="turma-meta">CEEP Dom Bosco • Marabá • 3 alunos</div>
+          <div style="margin-top:4px;"><span class="badge badge-warn">Incompleta</span></div>
+        </div>
+        <div class="turma-actions">
+          <button class="icon-btn" onclick="showToast('Editando equipe...')"><i class="ti ti-edit" style="font-size:12px;"></i></button>
+          <button class="icon-btn" onclick="openModal()"><i class="ti ti-trash" style="font-size:12px;"></i></button>
+        </div>
+      </div>
+      <div class="turma-card">
+        <div class="turma-icon">🌙</div>
+        <div>
+          <div class="turma-name">Equipe Apolo</div>
+          <div class="turma-meta">EEM Magalhães Barata • Belém • 4 alunos</div>
+          <div style="margin-top:4px;"><span class="badge badge-success">Completa</span></div>
+        </div>
+        <div class="turma-actions">
+          <button class="icon-btn" onclick="showToast('Editando equipe...')"><i class="ti ti-edit" style="font-size:12px;"></i></button>
+          <button class="icon-btn" onclick="openModal()"><i class="ti ti-trash" style="font-size:12px;"></i></button>
+        </div>
+      </div>
+      <div class="turma-card">
+        <div class="turma-icon">🌟</div>
+        <div>
+          <div class="turma-name">Equipe Perseu</div>
+          <div class="turma-meta">EEM Jarbas Passarinho • Santarém • 4 alunos</div>
+          <div style="margin-top:4px;"><span class="badge badge-info">Classificada</span></div>
+        </div>
+        <div class="turma-actions">
+          <button class="icon-btn" onclick="showToast('Editando equipe...')"><i class="ti ti-edit" style="font-size:12px;"></i></button>
+          <button class="icon-btn" onclick="openModal()"><i class="ti ti-trash" style="font-size:12px;"></i></button>
+        </div>
+      </div>
+    </div>
+    <button class="add-turma-btn" style="margin-top:8px;" onclick="showToast('Nova equipe sendo criada...')"><i class="ti ti-plus" style="font-size:13px;"></i> Adicionar Nova Equipe</button>
+  </div>
+
+  <!-- RANKING -->
+  <div class="page" id="page-ranking">
+    <div class="rank-header">
+      <h3>🏆 Ranking Geral</h3>
+      <p>Olimpíada de Foguetes Paraense 2026</p>
+      <span class="live-badge">● AO VIVO</span>
+    </div>
+    <div class="filter-bar">
+      <div class="filter-chip active" onclick="filterChip(this)">Geral</div>
+      <div class="filter-chip" onclick="filterChip(this)">Ensino Médio</div>
+      <div class="filter-chip" onclick="filterChip(this)">Fund. II</div>
+      <div class="filter-chip" onclick="filterChip(this)">Por Município</div>
+    </div>
+    <div class="podium">
+      <div class="podium-item">
+        <div class="podium-bar p2">🥈</div>
+        <div class="podium-name">Equipe Orion</div>
+        <div class="podium-score">94.2 pts</div>
+      </div>
+      <div class="podium-item">
+        <div class="podium-bar p1">🥇</div>
+        <div class="podium-name">Equipe Saturno</div>
+        <div class="podium-score">98.7 pts</div>
+      </div>
+      <div class="podium-item">
+        <div class="podium-bar p3">🥉</div>
+        <div class="podium-name">Equipe Apolo</div>
+        <div class="podium-score">91.5 pts</div>
+      </div>
+    </div>
+    <div class="rank-table">
+      <div class="rank-row top">
+        <div class="rank-pos">1</div>
+        <div class="rank-team-icon" style="background:#FFF8E0;">🚀</div>
+        <div style="flex:1"><div class="rank-team-name">Equipe Saturno</div><div class="rank-school">EEM Grão-Pará • Belém</div><div class="score-bar-mini"><div class="score-fill-mini" style="width:99%"></div></div></div>
+        <div style="text-align:right"><div class="rank-score">98.7</div><div class="rank-delta delta-up">▲ +2.1</div></div>
+      </div>
+      <div class="rank-row">
+        <div class="rank-pos">2</div>
+        <div class="rank-team-icon" style="background:#F1F5F9;">⭐</div>
+        <div style="flex:1"><div class="rank-team-name">Equipe Orion</div><div class="rank-school">CEEP Dom Bosco • Marabá</div><div class="score-bar-mini"><div class="score-fill-mini" style="width:95%"></div></div></div>
+        <div style="text-align:right"><div class="rank-score">94.2</div><div class="rank-delta delta-up">▲ +0.8</div></div>
+      </div>
+      <div class="rank-row">
+        <div class="rank-pos">3</div>
+        <div class="rank-team-icon" style="background:#F1F5F9;">🌙</div>
+        <div style="flex:1"><div class="rank-team-name">Equipe Apolo</div><div class="rank-school">EEM Magalhães Barata • Belém</div><div class="score-bar-mini"><div class="score-fill-mini" style="width:92%"></div></div></div>
+        <div style="text-align:right"><div class="rank-score">91.5</div><div class="rank-delta delta-down">▼ -1.2</div></div>
+      </div>
+      <div class="rank-row">
+        <div class="rank-pos">4</div>
+        <div class="rank-team-icon" style="background:#F1F5F9;">🌟</div>
+        <div style="flex:1"><div class="rank-team-name">Equipe Perseu</div><div class="rank-school">EEM Jarbas Passarinho • Santarém</div><div class="score-bar-mini"><div class="score-fill-mini" style="width:88%"></div></div></div>
+        <div style="text-align:right"><div class="rank-score">87.9</div><div class="rank-delta delta-up">▲ +3.4</div></div>
+      </div>
+      <div class="rank-row">
+        <div class="rank-pos">5</div>
+        <div class="rank-team-icon" style="background:#F1F5F9;">🌠</div>
+        <div style="flex:1"><div class="rank-team-name">Equipe Vega</div><div class="rank-school">EEM Barão de Igarapé Miri</div><div class="score-bar-mini"><div class="score-fill-mini" style="width:84%"></div></div></div>
+        <div style="text-align:right"><div class="rank-score">84.1</div><div class="rank-delta delta-down">▼ -0.5</div></div>
+      </div>
+    </div>
+    <div style="margin-top:12px;text-align:center;">
+      <button class="btn-secondary" onclick="showToast('Ranking completo carregado')">Ver todos os 142 times</button>
+    </div>
+  </div>
+
+  <!-- RELATÓRIOS -->
+  <div class="page" id="page-relatorios">
+    <div class="stat-row">
+      <div class="stat-mini"><div class="stat-mini-val">847</div><div class="stat-mini-lbl">Alunos</div></div>
+      <div class="stat-mini"><div class="stat-mini-val">142</div><div class="stat-mini-lbl">Equipes</div></div>
+      <div class="stat-mini"><div class="stat-mini-val">68</div><div class="stat-mini-lbl">Escolas</div></div>
+    </div>
+    <div class="section-title">Relatórios Institucionais</div>
+    <div class="report-card" onclick="showToast('Gerando PDF — Relatório Geral...')">
+      <div class="report-icon navy"><i class="ti ti-file-analytics" style="font-size:18px;"></i></div>
+      <div><div class="report-name">Relatório Geral</div><div class="report-desc">Todos alunos, equipes e resultados</div></div>
+      <div class="report-meta"><span class="badge badge-info">PDF</span><div class="report-size">~2.4 MB</div></div>
+    </div>
+    <div class="report-card" onclick="showToast('Gerando Excel — Lista de Participantes...')">
+      <div class="report-icon gold"><i class="ti ti-table" style="font-size:18px;"></i></div>
+      <div><div class="report-name">Lista de Participantes</div><div class="report-desc">Exportar cadastros completos</div></div>
+      <div class="report-meta"><span class="badge badge-success">XLSX</span><div class="report-size">~850 KB</div></div>
+    </div>
+    <div class="report-card" onclick="showToast('Gerando PDF — Ranking Oficial...')">
+      <div class="report-icon navy"><i class="ti ti-trophy" style="font-size:18px;"></i></div>
+      <div><div class="report-name">Ranking Oficial</div><div class="report-desc">Classificação para publicação</div></div>
+      <div class="report-meta"><span class="badge badge-info">PDF</span><div class="report-size">~1.1 MB</div></div>
+    </div>
+    <div class="report-card" onclick="showToast('Gerando PDF — Por Município...')">
+      <div class="report-icon green"><i class="ti ti-map-pin" style="font-size:18px;"></i></div>
+      <div><div class="report-name">Por Município</div><div class="report-desc">Consolidado regional</div></div>
+      <div class="report-meta"><span class="badge badge-info">PDF</span><div class="report-size">~980 KB</div></div>
+    </div>
+    <div class="report-card" onclick="showToast('Gerando PDF — Certificados...')">
+      <div class="report-icon blue"><i class="ti ti-certificate" style="font-size:18px;"></i></div>
+      <div><div class="report-name">Certificados</div><div class="report-desc">Geração em lote para alunos</div></div>
+      <div class="report-meta"><span class="badge badge-info">PDF</span><div class="report-size">~12 MB</div></div>
+    </div>
+    <button class="btn-primary" style="margin-top:8px;" onclick="showToast('Todos os relatórios foram gerados!')">Gerar Todos os Relatórios</button>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-title">⚠️ Confirmar exclusão</div>
+    <div class="modal-text">Tem certeza que deseja remover esta equipe? Todos os alunos vinculados serão desassociados. Esta ação não pode ser desfeita.</div>
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeModal()">Cancelar</button>
+      <button class="modal-confirm" onclick="confirmarExclusao()">Excluir</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+function doLogin(){
+  var e=document.getElementById('login-email').value;
+  var p=document.getElementById('login-pass').value;
+  if(e&&p){
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('app').style.display='flex';
+  } else {
+    var t=document.getElementById('login-screen').querySelector('.login-input');
+    t.style.borderColor='#F5B800';
+    setTimeout(()=>t.style.borderColor='rgba(255,255,255,0.2)',1500);
+  }
+}
+function showPage(id,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  el.classList.add('active');
+}
+function filterChip(el){
+  el.closest('.filter-bar').querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+}
+function showToast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+function salvarAluno(){
+  var n=document.getElementById('aluno-nome').value;
+  if(n.trim()){showToast('✅ Aluno "'+n.split(' ')[0]+'" cadastrado com sucesso!');}
+  else{showToast('⚠️ Preencha o nome do aluno');}
+}
+function openModal(){document.getElementById('modal').classList.add('show');}
+function closeModal(){document.getElementById('modal').classList.remove('show');}
+function confirmarExclusao(){
+  closeModal();
+  showToast('🗑️ Equipe removida com sucesso');
+}
+document.getElementById('login-pass').addEventListener('keypress',function(e){if(e.key==='Enter')doLogin();});
+</script>
